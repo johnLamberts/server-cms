@@ -1,0 +1,27 @@
+# Ignore Mac system files
+.DS_Store
+
+# Ignore node modules
+node_modules/
+
+# Ignore build directories
+build/
+dist/
+
+# Ignore log files
+*.log
+
+# Ignore environment variable files
+.env.production
+.env.development
+firebase_credential.json
+
+keys/*
+
+
+server/public/
+server/service_key/
+
+src/config/**/*.json
+
+
