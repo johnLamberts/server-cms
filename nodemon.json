@@ -2,6 +2,6 @@
   "watch": ["src"],
   "ext": "ts,js,json,jsx,mjs",
   "ignore": ["node_modules", "dist"],
-  "exec": "export GOOGLE_APPLICATION_CREDENTIALS='/home/johnlambert/Desktop/seniorebookletsystem/server/service_key/senior-citizen-booklet-firebase-adminsdk-1i46r-ea8c4d78f3.json' && ts-node -r ts-node/register/transpile-only -r tsconfig-paths/register ./src/server.ts",
+  "exec": "ts-node -r ts-node/register/transpile-only -r tsconfig-paths/register ./src/server.ts",
   "restartable": "rs"
 }
