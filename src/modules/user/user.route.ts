@@ -1,4 +1,5 @@
 import { usersFeature } from "@/common/middlewares/sorter-filter";
+import { uploadImage } from "@/utils/multer.utils";
 import express from "express";
 import { UserController } from "./user.controllers";
 
@@ -8,7 +9,7 @@ const userController = new UserController;
 
 
 // router.get("/", UserController.getUsersHandler)
-router.post("/add_user", (userController as any).addUserHandler)
+router.post("/add_user", uploadImage.single("userImg"), (userController as any).addUserHandler)
 router.get("/", usersFeature(), userController.getUsersHandler as any)
 // router.get('/api/v1/user/:id', (userController as any).getOneUserHandler);
 

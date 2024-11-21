@@ -1,12 +1,12 @@
 import { supabase } from "@/config";
-import { IUser } from "./user.interface";
+import { IVisitor } from "./visitor.interface";
 
-export class UserService {
+export class VisitorService {
 
   /**-------------------------------------------------- */
   // Create User                                         |
   /**-------------------------------------------------- */
-  async createUser (payload: IUser): Promise<IUser> {
+  async createVisitor (payload: IVisitor): Promise<IVisitor> {
     const { data, error: authError } = await supabase.auth.admin.createUser({
       email: payload.email,
       password: payload.password,
@@ -18,8 +18,8 @@ export class UserService {
 
     if(authError) throw  `[AuthErrorService]: ${authError}`;
 
-    const { data: user, error: userError } = await supabase
-    .from("user")
+    const { data: visitor, error: userError } = await supabase
+    .from("visitor")
     .insert({
       ...data.user.user_metadata,
       user_uid: data.user.id
@@ -27,9 +27,9 @@ export class UserService {
     .select()
     .single();
 
-    if(userError) throw  `[UserErrorService]: ${JSON.stringify(userError, null, 0)}`;
+    if(userError) throw  `[VisitorErrorService]: ${JSON.stringify(userError, null, 0)}`;
 
-    return user;
+    return visitor;
     
   }
 
@@ -42,4 +42,4 @@ export class UserService {
 }
 
 
-export default UserService;
+export default VisitorService;

@@ -2,7 +2,7 @@ import { supabase } from "@/config";
 import { TPaginationRequest, TPaginationResponse } from "@/interfaces";
 import { NextFunction } from "express";
 
-export const usersFeature = () => {
+export const municipalFeature = () => {
   return async (req: TPaginationRequest, res: TPaginationResponse, next: NextFunction) => {
     try {
     // Filtering
@@ -26,10 +26,7 @@ export const usersFeature = () => {
     console.log(page)
 
     // Initial Supabase Query
-    let query = supabase
-    .from("user_municipal_view_enigmatic")
-    .select(`
-      *`, { count: 'exact' }); // Fetch related `municipal` data based on `municipal_id`
+    let query = supabase.from("municipal").select("*", { count: 'exact' });
 
     // Apply Filters
     if(Object.keys(queryObject).length > 0) query = query.match(JSON.parse(queryString));
@@ -38,13 +35,11 @@ export const usersFeature = () => {
     // Apply Search
     if (req.query.search) {
       const searchText = req.query.search.toLowerCase();
-
-      // Search in user table fields
       query = query.or(
-        `firstName.ilike.%${searchText}%,lastName.ilike.%${searchText}%,middleName.ilike.%${searchText}%,email.ilike.%${searchText}%,municipal.ilike.%${searchText}%`
-      );
+        `municipal.ilike.%${searchText}%`
+      )
 
-
+      console.log(searchText)
     }
     
     // Apply Pagination
@@ -69,7 +64,7 @@ export const usersFeature = () => {
     if(req.query.fields) {
       const fields = req.query.fields.split(',').join(',');
 
-      ({ data, count, error } = await supabase.from('user_municipal_view_enigmatic').select(fields, { count: 'exact' }).range(offset, offset + limit - 1));
+      ({ data, count, error } = await supabase.from('municipal').select(fields, { count: 'exact' }).range(offset, offset + limit - 1));
       if (error) {
         throw error;
       }    
@@ -105,10 +100,10 @@ export const usersFeature = () => {
     next();
 
     } catch (error) {
-      console.log(`[UserErrorFeatures]: ${error}`)
+      console.log(`[MunicipalErrorFeatures]: ${error}`)
       return next(error)
     }
   } 
 }
 
-export default usersFeature;
+export default municipalFeature;

@@ -1,13 +1,13 @@
 
-export interface IUser {
-  user_id?: string;
+export interface IVisitor {
+  visitor_id?: string;
   user_uid?: string;
   
   firstName: string;
   middleName?: string;
   lastName: string;
 
-  userImg?: string;
+  visitorImg?: string;
 
   email: string;
   password?: string;
@@ -19,6 +19,7 @@ export interface IUser {
   created_at?: string;
   updated_at?: string;
 
-  userRole?: string
-  municipal_id?: number;
+  userRole?: "visitor"
+  
+  address?: string;
 }
