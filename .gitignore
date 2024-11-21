@@ -24,4 +24,4 @@ server/service_key/
 
 src/config/**/*.json
 
-
+service_key/*.json
