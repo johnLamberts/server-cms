@@ -23,6 +23,10 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": ["node_modules", "dist", "coverage"]
+    "exclude": ["node_modules", "dist", "coverage"],
+    "include": ["./src/**/*.ts", "./src/**/*.d.ts"],
+    "ts-node": {
+      "require": ["tsconfig-paths/register"]
+    }
   }
   
