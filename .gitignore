@@ -26,3 +26,5 @@ src/config/**/*.json
 
 service_key/*.json
 .vercel
+
+public/*

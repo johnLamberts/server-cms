@@ -14,6 +14,9 @@ export const fileStorage = multer.diskStorage({
   ): void => {
     const fileName = getFileName(req.originalUrl);
 
+    console.log(req.originalUrl)
+
+
   // callback(null, `public/uploads/${fileName}`);
 
   const uploadPath = path.resolve(
@@ -21,6 +24,7 @@ export const fileStorage = multer.diskStorage({
     "public/uploads",
     fileName
   );
+
 
   ensureDirectoryExists(uploadPath);
 
