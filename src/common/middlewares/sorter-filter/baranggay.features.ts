@@ -2,7 +2,7 @@ import { supabase } from "@/config";
 import { TPaginationRequest, TPaginationResponse } from "@/interfaces";
 import { NextFunction } from "express";
 
-export const usersFeature = () => {
+export const baranggayFeature = () => {
   return async (req: TPaginationRequest, res: TPaginationResponse, next: NextFunction) => {
     try {
     // Filtering
@@ -23,12 +23,10 @@ export const usersFeature = () => {
     const limit = Number(req.query.limit) || 20;
     const offset = (page - 1) * limit;
 
+    console.log(page)
 
     // Initial Supabase Query
-    let query = supabase
-    .from("user_municipal_view_enigmatic")
-    .select(`
-      *`, { count: 'exact' }); // Fetch related `municipal` data based on `municipal_id`
+    let query = supabase.from("baranggay").select("*", { count: 'exact' });
 
     // Apply Filters
     if(Object.keys(queryObject).length > 0) query = query.match(JSON.parse(queryString));
@@ -37,13 +35,11 @@ export const usersFeature = () => {
     // Apply Search
     if (req.query.search) {
       const searchText = req.query.search.toLowerCase();
-
-      // Search in user table fields
       query = query.or(
-        `firstName.ilike.%${searchText}%,lastName.ilike.%${searchText}%,middleName.ilike.%${searchText}%,email.ilike.%${searchText}%,municipal.ilike.%${searchText}%`
-      );
+        `baranggay.ilike.%${searchText}%`
+      )
 
-
+      console.log(searchText)
     }
     
     // Apply Pagination
@@ -68,7 +64,7 @@ export const usersFeature = () => {
     if(req.query.fields) {
       const fields = req.query.fields.split(',').join(',');
 
-      ({ data, count, error } = await supabase.from('user_municipal_view_enigmatic').select(fields, { count: 'exact' }).range(offset, offset + limit - 1));
+      ({ data, count, error } = await supabase.from('baranggay').select(fields, { count: 'exact' }).range(offset, offset + limit - 1));
       if (error) {
         throw error;
       }    
@@ -101,15 +97,13 @@ export const usersFeature = () => {
 
     // Add paginated results to the response
     res.paginatedResults = results;
-  
-    
     next();
 
     } catch (error) {
-      console.log(`[UserErrorFeatures]: ${JSON.stringify(error, null, 4)}`)
+      console.log(`[BaranggayErrorFeatures]: ${error}`)
       return next(error)
     }
   } 
 }
 
-export default usersFeature;
+export default baranggayFeature;
