@@ -1,6 +1,7 @@
 import { Application } from "express";
 import { AuthRoute } from "./authentication/auth.route";
 import { EventRoute } from "./event/event.route";
+import { ExhibitRoute } from "./exhibits/exhibits.route";
 import { MuseumRoute } from "./museum/museum.route";
 import { BaranggayRoute } from "./settings/baranggay/municipal.route";
 import { MunicipalRoute } from "./settings/municipality/municipal.route";
@@ -16,6 +17,7 @@ export const router = async (app: Application) => {
   app.use(`${API_VERSIONING_ENDPOINTS}/visitor`, VisitorRoute)
   app.use(`${API_VERSIONING_ENDPOINTS}/museum`, MuseumRoute)
   app.use(`${API_VERSIONING_ENDPOINTS}/event`, EventRoute)
+  app.use(`${API_VERSIONING_ENDPOINTS}/exhibit`, ExhibitRoute)
 
   // AUTH
   app.use(`${API_VERSIONING_ENDPOINTS}/auth`, AuthRoute)

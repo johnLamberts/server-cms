@@ -21,7 +21,7 @@ export class EventController {
       
       if(req.file?.filename) {
         const localFilePath = `${process.env.PWD}/public/uploads/events/${req.file?.filename}`;
-        const destination = `museo_rizal/events/${req.file.filename}`;
+        const destination = `events/${req.file.filename}`;
 
         storageRefUrl = await uploadFile(localFilePath, destination);
       }
