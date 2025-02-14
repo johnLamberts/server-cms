@@ -8,6 +8,7 @@ const authController = new AuthController;
 
 // router.get("/", authController.getUsersHandler)
 router.post("/login", (authController as any).loginHandler)
+router.get("/current_user", (authController as any).currentUserHandler)
 // router.get("/", baranggayFeature(), authController.getBaranggaysHandler as any)
 // router.get('/api/v1/user/:id', (userController as any).getOneUserHandler);
 

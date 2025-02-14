@@ -16,15 +16,23 @@ export class UserService {
 
     
     const { data, error: authError } = await supabase.auth.admin.createUser({
+      
+      
       email: payload.email,
       password: payload.password,
-      email_confirm: true,
+      
       
       user_metadata: {
         ...payload
-      }
+      },
+
+      email_confirm: true
     })
 
+
+    await supabase.auth.admin.updateUserById(data.user!.id, {
+      email_confirm: true
+    })
 
     if(authError) throw  `[AuthErrorService]: ${authError}`;
 
@@ -33,12 +41,14 @@ export class UserService {
     .insert({
       ...data.user.user_metadata,
       user_uid: data.user.id,
-      email_verified: true,
     })
     .select()
     .single();
 
+
     if(userError) throw  `[UserErrorService]: ${JSON.stringify(userError, null, 0)}`;
+
+
 
     await EmailService.userInformationEmail(payload);
 

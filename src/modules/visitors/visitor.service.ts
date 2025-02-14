@@ -1,4 +1,5 @@
 import { supabase } from "@/config";
+import { EmailService } from "../shared/email.service";
 import { IVisitor } from "./visitor.interface";
 
 export class VisitorService {
@@ -12,7 +13,8 @@ export class VisitorService {
       password: payload.password,
       user_metadata: {
         ...payload
-      }
+      },
+      email_confirm: true
     })
 
 
@@ -28,6 +30,9 @@ export class VisitorService {
     .single();
 
     if(userError) throw  `[VisitorErrorService]: ${JSON.stringify(userError, null, 0)}`;
+
+
+    await EmailService.userInformationEmail(payload);
 
     return visitor;
     

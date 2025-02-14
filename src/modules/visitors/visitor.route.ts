@@ -6,8 +6,7 @@ import { VisitorController } from "./visitor.controllers";
 const router = express.Router();
 
 const visitorController = new VisitorController;
-
-
+  
 // router.get("/", visitorController.getUsersHandler)
 router.post("/add_visitor", uploadImage.single("visitorImg"), (visitorController as any).addVisitorHandler)
 router.get("/", visitorFeature(), visitorController.getVisitorHandler as any)

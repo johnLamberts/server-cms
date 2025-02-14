@@ -100,7 +100,7 @@ export const baranggayFeature = () => {
     next();
 
     } catch (error) {
-      console.log(`[BaranggayErrorFeatures]: ${error}`)
+      console.log(`[BaranggayErrorFeatures]: ${JSON.stringify(error, null, 4  )}`)
       return next(error)
     }
   } 
