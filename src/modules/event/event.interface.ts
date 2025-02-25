@@ -8,6 +8,8 @@ export interface IEvent {
   
   eventContent: string;
   
+  eventDate?: string;
+  eventTime?: string;
 
   status?: string;
 
