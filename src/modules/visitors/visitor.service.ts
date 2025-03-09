@@ -39,6 +39,38 @@ export class VisitorService {
   }
 
  
+  /**-------------------------------------------------- */
+  // Update Visitor                                         |
+  /**-------------------------------------------------- */
+  async updateVisitor (payloadId: string,payload: IVisitor): Promise<IVisitor> {
+    const { data, error: authError } = await supabase.auth.admin.updateUserById(payloadId, {
+      email: payload.email,
+      password: payload.password,
+      user_metadata: {
+        ...payload
+      },
+    })
+
+
+    if(authError) throw  `[AuthErrorService]: ${authError}`;
+
+    const { data: visitor, error: userError } = await supabase
+    .from("visitor")
+    .update({
+      ...data.user.user_metadata,
+    })
+    .eq("user_uid", payload.user_uid)
+    .single();
+
+    if(userError) throw  `[VisitorErrorService]: ${JSON.stringify(userError, null, 0)}`;
+
+
+    await EmailService.userModifyProfile(payload);
+
+    return visitor;
+    
+  }
+
 
   /**-------------------------------------------------- */
   // Get User                                            |

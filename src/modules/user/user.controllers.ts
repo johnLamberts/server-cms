@@ -1,6 +1,8 @@
+import { supabase } from "@/config";
 import { HttpStatusCodes } from "@/constants";
 import { TPaginationResponse } from "@/interfaces";
-import { customResponse, getRandomAvatarImage, uploadFile } from "@/utils";
+import { customResponse, getRandomAvatarImage } from "@/utils";
+import { decode } from "base64-arraybuffer";
 import { NextFunction, Request, Response } from "express";
 import { IUser } from "./user.interface";
 import UserService from "./user.service";
@@ -16,21 +18,43 @@ export class UserController {
     try {
 
       let storageRefUrl = '';
+            
+            if (req.body.userImg && req.body.userImg.startsWith('data:image/')) {
+              // The cover photo is Base64-encoded
+              const base64Image = req.body.coverPhoto;
+             
+              const base64Data = base64Image.includes('base64,') 
+              ? base64Image.split('base64,')[1] 
+              : base64Image
+        
+            // Upload image to Supabase Storage
+            const { data: imageData, error: uploadError } = await supabase.storage
+              .from('museo_rizal')
+              .upload(`users/${Date.now()}-cover.png`, decode(base64Data), {
+                contentType: 'image/png'
+              })
+        
+              if (uploadError) {
+                throw new Error(`Error uploading image: ${uploadError.message}`)
+              }
       
-      if(req.file?.filename) {
-        const localFilePath = `${process.env.PWD}/public/uploads/users/${req.file?.filename}`;
-        const destination = `museo_rizal/users/${req.file.filename}`;
-
-        storageRefUrl = await uploadFile(localFilePath, destination);
-      }
+              // Get public URL for the uploaded image
+              const { data: urlData } = await supabase.storage
+              .from('museo_rizal')
+              .getPublicUrl(imageData.path)
       
-      console.log(storageRefUrl)
+      
+              storageRefUrl = urlData.publicUrl;
+      
+            }
+      
+ 
 
-      const userData = {
-        ...req.body,
-        userImg:  storageRefUrl || getRandomAvatarImage()
-      }
-
+          
+            const userData = {
+              ...req.body,
+              userImg:  storageRefUrl || getRandomAvatarImage()
+            }
 
       const data = await this.userService.createUser(userData);
 
@@ -46,6 +70,90 @@ export class UserController {
 
     }
   }
+
+  updateUserHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+
+      let storageRefUrl = req.body.userImg;
+
+        
+                if (req.body.userImg && req.body.userImg.startsWith('data:image/')) {
+                  // The cover photo is Base64-encoded
+                  const base64Image = req.body.userImg;
+                  const base64Data = base64Image.includes('base64,') 
+                  ? base64Image.split('base64,')[1] 
+                  : base64Image
+            
+                // Upload image to Supabase Storage
+                const { data: imageData, error: uploadError } = await supabase.storage
+                  .from('museo_rizal')
+                  .upload(`user/${Date.now()}-cover.png`, decode(base64Data), {
+                    contentType: 'image/png'
+                  })
+            
+                  if (uploadError) {
+                    throw new Error(`Error uploading image: ${uploadError.message}`)
+                  }
+          
+                  // Get public URL for the uploaded image
+                  const { data: urlData } = await supabase.storage
+                  .from('museo_rizal')
+                  .getPublicUrl(imageData.path)
+          
+          
+                  storageRefUrl = urlData.publicUrl;
+          
+                }
+          
+                console.log(storageRefUrl)
+                
+              
+                const userData = {
+                  ...req.body,
+                  userImg:  storageRefUrl || getRandomAvatarImage()
+                }
+    
+
+      const data = await this.userService.updateUser(userData);
+
+
+      const response = customResponse().success(HttpStatusCodes.OK, data, `User has been updated.`)
+
+      return res.status(response.statusCode).json(response);
+
+    } catch (err) {
+      console.log(`[UpdateUserControllerError]: ${err}`)
+      
+      next(err);
+
+    }
+  }
+
+  updateUserPasswordHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        
+      const userData = {
+        ...req.body,
+      }
+
+      console.log(userData);
+    
+
+      const data = await this.userService.updateUserPassword(userData);
+
+      const response = customResponse().success(HttpStatusCodes.OK, data, `User password has been updated.`)
+
+      return res.status(response.statusCode).json(response);
+
+    } catch (err) {
+      console.log(`[UpdateUserPasswordControllerError]: ${err}`)
+      
+      next(err);
+
+    }
+  }
+
 
   getUsersHandler = async (_req: Request, res: TPaginationResponse) => {
     try {
