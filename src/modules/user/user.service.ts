@@ -99,6 +99,8 @@ export class UserService {
     /**-------------------------------------------------- */
     async updateUserPassword (payload: IUser) {
 
+      console.log(payload)
+
       const { data: userData, error: userError} = await supabase.from("user").select("*").eq("user_id", payload.user_id).single();
 
       if(userError) throw  `[FetchUserErrorService]: ${JSON.stringify(userError, null, 0)}`;

@@ -6,7 +6,6 @@ export interface IMuseum {
   
   coverPhoto: string
   
-  description: string
   
   colorTheme: string
   

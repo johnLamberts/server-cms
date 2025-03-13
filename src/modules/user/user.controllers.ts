@@ -21,7 +21,7 @@ export class UserController {
             
             if (req.body.userImg && req.body.userImg.startsWith('data:image/')) {
               // The cover photo is Base64-encoded
-              const base64Image = req.body.coverPhoto;
+              const base64Image = req.body.userImg;
              
               const base64Data = base64Image.includes('base64,') 
               ? base64Image.split('base64,')[1] 

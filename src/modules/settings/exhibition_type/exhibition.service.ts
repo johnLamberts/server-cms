@@ -1,27 +1,28 @@
 import { supabase } from "@/config";
-import { IBaranggay } from "./baranggayl.interface";
+import IExhibition from "./exhibition.interface";
 
-export class BaranggayService {
+export class UserService {
 
   /**-------------------------------------------------- */
   // Create User                                         |
   /**-------------------------------------------------- */
-  async createBaranggay (payload: IBaranggay): Promise<IBaranggay> {
+  async createUser (payload: IExhibition): Promise<IExhibition> {
   
 
-    const { data: baranggay, error: baranggayErr } = await supabase
-    .from("baranggay")
+    const { data: municipal, error: municipalErr } = await supabase
+    .from("municipal")
     .insert({
       ...payload
     })
     .select()
     .single();
 
-    if(baranggayErr) throw  `[BaranggayErrorService]: ${JSON.stringify(baranggayErr, null, 0)}`;
+    if(municipalErr) throw  `[MunicipalErrorService]: ${JSON.stringify(municipalErr, null, 0)}`;
 
 
+    console.log(municipal);
 
-    return baranggay;
+    return municipal;
     
   }
 
@@ -31,4 +32,4 @@ export class BaranggayService {
 }
 
 
-export default BaranggayService;
+export default UserService;
