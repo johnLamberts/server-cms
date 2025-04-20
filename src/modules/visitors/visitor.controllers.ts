@@ -49,10 +49,47 @@ export class VisitorController {
   }
 
 
+  registerVisitorHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+      let storageRefUrl = '';
+      
+      if(req.file?.filename) {
+        const localFilePath = `${process.env.PWD}/public/uploads/visitor/${req.file?.filename}`;
+        const destination = `museo_rizal/visitor/${req.file.filename}`;
+
+        storageRefUrl = await uploadFile(localFilePath, destination);
+      }
+      
+
+      const visitorData = {
+        ...req.body,
+        visitorImg:  storageRefUrl || getRandomAvatarImage()
+      }
+
+
+      const data = await this.visitorService.registerVisitor(visitorData);
+
+
+      const response = customResponse().success(HttpStatusCodes.OK, data, `Visitor has been added.`)
+
+      return res.status(response.statusCode).json(response);
+
+    } catch (err) {
+      console.log(`[AddVisitorControllerError]: ${err}`)
+      
+      next(err);
+
+    }
+  }
+
+
 
   updateVisitorHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
+
+      console.log("updateVIistorHandler", req.body)
       let storageRefUrl = req.body.visitorImg;
 
       console.log(storageRefUrl)
@@ -77,9 +114,9 @@ export class VisitorController {
                   }
           
                   // Get public URL for the uploaded image
-                  const { data: urlData } = await supabase.storage
-                  .from('museo_rizal')
-                  .getPublicUrl(imageData.path)
+                  const { data: urlData } = supabase.storage
+                    .from('museo_rizal')
+                    .getPublicUrl(imageData.path)
           
           
                   storageRefUrl = urlData.publicUrl;
@@ -98,6 +135,36 @@ export class VisitorController {
     
 
       const data = await this.visitorService.updateVisitor(visitorData.user_uid, visitorData);
+
+
+      const response = customResponse().success(HttpStatusCodes.OK, data, `Visitor has been updated.`)
+
+      return res.status(response.statusCode).json(response);
+
+    } catch (err) {
+      console.log(`[UpdateVisitorControllerError]: ${err}`)
+      
+      next(err);
+
+    }
+  }
+
+  updateVisitorApprovedStatusHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+      console.log(req.body)
+
+              
+                const visitorData = {
+                  ...req.body,
+                  visitor_id: req.body.visitor_id
+                }
+
+
+                console.log(visitorData)
+    
+
+      const data = await this.visitorService.updateApprovedVisitorStatus(visitorData.user_uid, visitorData);
 
 
       const response = customResponse().success(HttpStatusCodes.OK, data, `Visitor has been updated.`)

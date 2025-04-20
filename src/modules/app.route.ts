@@ -1,4 +1,5 @@
 import { Application } from "express";
+import { ArtifactRoute } from "./artifacts-gallery/artifacts-gallery.route";
 import { AuthRoute } from "./authentication/auth.route";
 import { EventRoute } from "./event/event.route";
 import { ExhibitRoute } from "./exhibits/exhibits.route";
@@ -22,6 +23,7 @@ export const router = async (app: Application) => {
   app.use(`${API_VERSIONING_ENDPOINTS}/event`, EventRoute)
   app.use(`${API_VERSIONING_ENDPOINTS}/exhibit`, ExhibitRoute)
   app.use(`${API_VERSIONING_ENDPOINTS}/home_edits`, HomeRoute)
+  app.use(`${API_VERSIONING_ENDPOINTS}/artifacts`, ArtifactRoute)
 
   // AUTH
   app.use(`${API_VERSIONING_ENDPOINTS}/auth`, AuthRoute)
