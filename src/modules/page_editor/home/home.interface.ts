@@ -9,6 +9,10 @@ export interface IHome {
   
   created_at?: string;
 
+  title?: string;
+  keywords?: string;
+  description?: string;
+  
   mode?: string;
 
   

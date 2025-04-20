@@ -8,11 +8,13 @@ export class HomeService {
   /**-------------------------------------------------- */
   async createEvent (payload: IHome): Promise<IHome> {
 
-
+    console.log(payload);
 
     const { data: home, error: homeError } = await supabase
     .from("home_editor")
-    .insert(payload)
+    .insert({
+      ...payload,
+    })
     .select()
     .single();
 

@@ -1,7 +1,7 @@
 import { supabase } from "@/config";
 import { HttpStatusCodes } from "@/constants";
 import { TPaginationResponse } from "@/interfaces";
-import { customResponse, uploadFile } from "@/utils";
+import { customResponse } from "@/utils";
 import { getRandomArtifactImage } from "@/utils/get-random-artifacts.image";
 import { decode } from "base64-arraybuffer";
 import { NextFunction, Request, Response } from "express";
@@ -16,15 +16,48 @@ export class ArtifactController {
   }
 
   addArtifactHandler = async (req: Request, res: Response, next: NextFunction) => {
+
+    console.log(req.body);
+
     try {
       let storageRefUrl = '';
+                 
+                 if (req.body.artifactImg && req.body.artifactImg.startsWith('data:image/')) {
+                   // The cover photo is Base64-encoded
+                   const base64Image = req.body.artifactImg;
+                  
+                   const base64Data = base64Image.includes('base64,') 
+                   ? base64Image.split('base64,')[1] 
+                   : base64Image
+             
+                 // Upload image to Supabase Storage
+                 const { data: imageData, error: uploadError } = await supabase.storage
+                   .from('museo_rizal')
+                   .upload(`users/${Date.now()}-cover.png`, decode(base64Data), {
+                     contentType: 'image/png'
+                   })
+             
+                   if (uploadError) {
+                     throw new Error(`Error uploading image: ${uploadError.message}`)
+                   }
+           
+                   // Get public URL for the uploaded image
+                   const { data: urlData } = await supabase.storage
+                   .from('museo_rizal')
+                   .getPublicUrl(imageData.path)
+           
+           
+                   storageRefUrl = urlData.publicUrl;
+           
+                 }
+           
       
-      if(req.file?.filename) {
-        const localFilePath = `${process.env.PWD}/public/uploads/artifacts/${req.file?.filename}`;
-        const destination = `museo_rizal/artifacts/${req.file.filename}`;
-
-        storageRefUrl = await uploadFile(localFilePath, destination);
-      }
+     
+               
+                //  const userData = {
+                //    ...req.body,
+                //    artifactImg:  storageRefUrl || getRandomAvatarImage()
+                //  }
       
       const artifactData = {
         ...req.body,
@@ -44,8 +77,9 @@ export class ArtifactController {
   }
 
   updateArtifactHandler = async (req: Request, res: Response, next: NextFunction) => {
+    console.log("updateArtifactHandler", req.body);
     try {
-      console.log("updateArtifactHandler", req.body);
+
       let storageRefUrl = req.body.artifactImg;
 
       // Handle base64 image uploads

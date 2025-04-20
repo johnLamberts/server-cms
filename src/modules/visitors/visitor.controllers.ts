@@ -18,14 +18,43 @@ export class VisitorController {
     try {
 
       let storageRefUrl = '';
-      
-      if(req.file?.filename) {
-        const localFilePath = `${process.env.PWD}/public/uploads/visitor/${req.file?.filename}`;
-        const destination = `museo_rizal/visitor/${req.file.filename}`;
+                 
+      if (req.body.visitorImg && req.body.visitorImg.startsWith('data:image/')) {
+        // The cover photo is Base64-encoded
+        const base64Image = req.body.visitorImg;
+       
+        const base64Data = base64Image.includes('base64,') 
+        ? base64Image.split('base64,')[1] 
+        : base64Image
+  
+      // Upload image to Supabase Storage
+      const { data: imageData, error: uploadError } = await supabase.storage
+        .from('museo_rizal')
+        .upload(`users/${Date.now()}-cover.png`, decode(base64Data), {
+          contentType: 'image/png'
+        })
+  
+        if (uploadError) {
+          throw new Error(`Error uploading image: ${uploadError.message}`)
+        }
 
-        storageRefUrl = await uploadFile(localFilePath, destination);
+        // Get public URL for the uploaded image
+        const { data: urlData } = await supabase.storage
+        .from('museo_rizal')
+        .getPublicUrl(imageData.path)
+
+
+        storageRefUrl = urlData.publicUrl;
+
       }
-      
+
+
+
+    
+     //  const userData = {
+     //    ...req.body,
+     //    visitorImg:  storageRefUrl || getRandomAvatarImage()
+     //  }
 
       const visitorData = {
         ...req.body,
